@@ -4,11 +4,17 @@ RUN apt update && \
     apt install curl -y && \
     rm -rf /var/lib/apt/lists/*
 
-RUN curl -LO https://dl.k8s.io/release/v1.23.0/bin/linux/amd64/kubectl && \
-    chmod +x kubectl && \
-    mkdir -p ~/.local/bin && \
-    mv ./kubectl ~/.local/bin/kubectl && \
-    echo 'export PATH=".local/bin/:$PATH"' >> ~/.bashrc && \
-    mkdir ~/.kube
+RUN adduser --system --home /kubernetes --shell /bin/bash --group --uid 1001 kubernetes
 
-WORKDIR /root
+RUN curl -LO https://dl.k8s.io/release/v1.24.0/bin/linux/amd64/kubectl && \
+    mkdir -p kubernetes/.local/bin && \
+    mv ./kubectl /kubernetes/.local/bin/kubectl && \
+    chown kubernetes:kubernetes -R /kubernetes && \
+    chmod 100 /kubernetes/.local/bin/kubectl
+
+USER 1001
+
+RUN echo 'export PATH=".local/bin/:$PATH"' >> /kubernetes/.bashrc && \
+    mkdir /kubernetes/.kube
+
+WORKDIR /kubernetes
