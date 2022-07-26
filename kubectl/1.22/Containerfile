@@ -18,3 +18,5 @@ RUN echo 'export PATH=".local/bin/:$PATH"' >> /kubernetes/.bashrc && \
     mkdir /kubernetes/.kube
 
 WORKDIR /kubernetes
+
+ENTRYPOINT [ "/bin/bash" ]
